@@ -1,11 +1,11 @@
 rule create_diversity:
     input:
-        ref="references/norovirus/reverse_genetics_gii6.fasta",
         tree="references/norovirus/tree.nw"
     output:
         "diverse_references/reverse_genetics_gii6.fasta"
     shell:
-        "seq-gen -l 7500 -s 1 -d 50 -m HKY -z 12345 -t 0.2 -k {input.ref} -o f {input.tree}"
+        "seq-gen -l 7573 -s 1 -m HKY -z 12345 -t 0.2 -of -k 1 {input.tree} > {output}"
+ 
 
 rule makeblastdb:
     input:
