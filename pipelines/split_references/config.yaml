@@ -1,0 +1,14 @@
+run_name: noro_validation
+configPath: pipelines/split_references/config.yaml
+referencePanelPath: ../artic-noro/rampart_config/norovirus/initial_record_set.fasta
+ampliconFilePath: ../artic-noro/primer-schemes/noro2kb/V2/noro2kb.amplicons.csv
+min_length: 1000
+max_length: 3000
+distances: [0.01,0.02,0.03,0.04,0.05,0.1,0.15,0.2,0.25,0.3,0.35]
+outputDir: validation_output
+# amplicons:
+#   Amp1: [24,1990]
+#   Amp2: [1540,3690]
+#   Amp3: [2900,5104]
+#   Amp4: [4290,6568]
+#   Amp5: [5697,7494]

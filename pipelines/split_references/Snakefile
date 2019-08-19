@@ -1,0 +1,15 @@
+import os
+import collections
+from Bio import SeqIO
+
+configfile: "pipelines/split_references/config.yaml"
+
+##### Target rules #####
+
+rule all:
+    input:
+        config["outputDir"] + "/validator_config.yaml"
+        
+
+##### Modules #####
+include: "rules/generate_refs.smk"

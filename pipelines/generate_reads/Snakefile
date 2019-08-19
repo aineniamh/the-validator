@@ -1,0 +1,17 @@
+import os
+import collections
+from Bio import SeqIO
+
+##### Target rules #####
+
+rule all:
+    input:
+        expand("{iteration}/simulated_reads/coverage_{coverage}.simulated.fastq",iteration=config["iterations"], coverage=config["coverages"]),
+        expand("{iteration}/consensus/distance_{distance}_coverage_{coverage}/consensus.fasta",iteration=config["iterations"], distance=config["distances"], coverage=config["coverages"]),
+        expand("coverage_distance_accuracy.png")
+
+##### Modules #####
+include: "rules/simulate_reads.smk"
+include: "rules/polish.smk"
+include: "rules/results.smk"
+
