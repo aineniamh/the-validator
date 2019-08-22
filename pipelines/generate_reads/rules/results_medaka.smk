@@ -4,21 +4,22 @@ rule get_cns:
     params:
         input_dir = "{iteration}"
     output:
-        "{iteration}/consensus_sequences.fasta"
+        "{iteration}/consensus_medaka_sequences.fasta"
     run:
         c = 0
         with open(str(output),"w") as fw:
             for r, d, f in os.walk(params.input_dir):
-                for filename in f:
-                    if filename=="consensus.fasta":
-                        d = r.split("/")[-1]
-                        try:
-                            for record in SeqIO.parse(r + "/" + filename,"fasta"):
-                                fw.write(">{}\n{}\n".format(d, record.seq))
+                if "consensus_medaka" in r:
+                    for filename in f:
+                        if filename=="consensus.fasta":
+                            d = r.split("/")[-1]
+                            try:
+                                for record in SeqIO.parse(r + "/" + filename,"fasta"):
+                                    fw.write(">{}\n{}\n".format(d, record.seq))
 
-                                c+=1
-                        except:
-                            continue
+                                    c+=1
+                            except:
+                                continue
         print(c)
 
 rule make_blast_db:
@@ -33,20 +34,20 @@ rule blast:
     input:
         db= "references/poliovirus/Sabin_1_amplicon.fasta",
         db_hidden = "references/poliovirus/Sabin_1_amplicon.fasta.nhr",
-        seqs = "{iteration}/consensus_sequences.fasta"
+        seqs = "{iteration}/consensus_medaka_sequences.fasta"
     output:
-        "{iteration}/blast_against_sabin.csv"
+        "{iteration}/blast_against_sabin_medaka.csv"
     shell:
         "blastn -db {input.db} -query {input.seqs} -outfmt 10 -out {output}"
 
 rule get_accuracy:
     input:
-        "{iteration}/blast_against_sabin.csv"
+        "{iteration}/blast_against_sabin_medaka.csv"
     params:
         coverage = config["coverages"],
         distance = config["distances"]
     output:
-        "{iteration}/distance_coverage_sweep.csv"
+        "{iteration}/distance_coverage_sweep_medaka.csv"
     run:
         combo_dict = {}
         for i in params.distance:
@@ -73,11 +74,12 @@ rule get_accuracy:
 
 rule make_figs:
     input:
-        expand("{iteration}/distance_coverage_sweep.csv", iteration=config["iterations"])
+        racon = expand("{iteration}/distance_coverage_sweep.csv", iteration=config["iterations"]),
+        medaka = expand("{iteration}/distance_coverage_sweep_medaka.csv", iteration=config["iterations"])
     output:
         # distance ="distance_vs_accuracy.png",
         # coverage = "coverage_vs_accuracy.png",
-        both = "coverage_distance_accuracy.png"
+        both = "coverage_distance_accuracy_both.png"
     run:
 
           # noqa: F401 unused import
@@ -89,9 +91,12 @@ rule make_figs:
         plt.ylabel("Coverage")
         ax.set_zlabel('%Identity')
         print(str(input))
-        for filename in str(input).split(' '):
+        for filename in str(input.racon).split(' '):
             data = pd.read_csv(filename)
             ax.scatter(data["distance"],data["coverage"],data["identity"],color="#294763" )
+        for filename in str(input.medaka).split(' '):
+            data = pd.read_csv(filename)
+            ax.scatter(data["distance"],data["coverage"],data["identity"],color="#A06701" )
         fig.savefig(str(output.both))
 
 
