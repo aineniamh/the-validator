@@ -1,0 +1,23 @@
+import os
+import collections
+from Bio import SeqIO
+from mpl_toolkits.mplot3d import Axes3D
+import matplotlib as mpl
+from matplotlib import pyplot as plt
+import pandas as pd
+##### Target rules #####
+
+rule all:
+    input:
+        expand("test/{iteration}/mix/calls_ref/distance_{distance}_coverage_200/round_2_final_unphased.vcf",iteration=config["iterations"],distance=config["distances"]),
+        expand("test/{iteration}/mix/calls_cns/distance_{distance}_coverage_200/round_2_final_unphased.vcf",iteration=config["iterations"],distance=config["distances"]),
+        expand("test/{iteration}/mix/alignments/distance_{distance}_coverage_200X.aln.fasta",iteration=config["iterations"],distance=config["distances"]),
+        expand("test/{iteration}/mix/alignments/distance_{distance}_sabin_cns.aln.fasta",iteration=config["iterations"],distance=config["distances"]),
+        expand("test/{iteration}/mix/alignments/distance_{distance}_ref_cns.aln.fasta",iteration=config["iterations"],distance=config["distances"])
+
+
+##### Modules #####
+include: "rules/polish.smk"
+include: "rules/mix_test.smk"
+
+

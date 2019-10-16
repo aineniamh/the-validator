@@ -1,16 +1,18 @@
-rule simulate_d_reads:
+rule simulate_diverse_reads:
     input:
-        "{iteration}/diverse_refs/distance_{distance}.fasta"
+        "test/{iteration}/diverse_refs/distance_{distance}.fasta"
+    params:
+        coverage=config["coverage"]
     output:
-        "{iteration}/simulated_diverse_reads/distance_{distance}.simulated.fastq"
+        "test/{iteration}/diverse_reads/coverage_200_distance_{distance}.simulated.fastq"
     shell:
-        "badread simulate --reference {input} --quantity 100X --length 1107,4 --identity 80,95,5 > {output}"
+        "badread simulate --reference {input} --quantity {params.coverage}X --length 1107,4 --identity 80,95,5 > {output}"
 
 rule make_mixture:
     input:
-        diverse_reads = "{iteration}/simulated_diverse_reads/distance_{distance}.simulated.fastq",
-        coverage_varied = "{iteration}/simulated_reads/coverage_{coverage}.simulated.fastq"
+        diverse_reads = "test/{iteration}/diverse_reads/coverage_200_distance_{distance}.simulated.fastq",
+        coverage_varied = "test/{iteration}/simulated_reads/coverage_200.simulated.fastq"
     output:
-        "{iteration}/simulated_mixture/distance_{distance}_coverage_{coverage}.simulated.fastq"
+        "test/{iteration}/mix_reads_distance_varied/sabin_and_distance_{distance}_coverage_200.simulated.fastq"
     shell:
         "cat {input.diverse_reads} {input.coverage_varied} > {output}"

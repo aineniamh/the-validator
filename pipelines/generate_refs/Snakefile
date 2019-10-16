@@ -1,0 +1,25 @@
+import os
+import collections
+from Bio import SeqIO
+from mpl_toolkits.mplot3d import Axes3D
+import matplotlib as mpl
+from matplotlib import pyplot as plt
+import pandas as pd
+##### Target rules #####
+
+rule all:
+    input:
+        expand("test/{iteration}/diverse_refs/distance_{distance}.fasta",iteration=config["iterations"],distance=config["distances"])
+
+rule create_diversity:
+    input:
+        ref= "references/poliovirus/Sabin_1_amplicon.fasta"
+    params:
+        distance = "{distance}"
+    output:
+        "test/{iteration}/diverse_refs/distance_{distance}.fasta"
+    shell:
+        "python pipelines/generate_refs/mutate.py --fasta {input.ref} "
+        "--distance {params.distance} --outfile {output}"
+
+

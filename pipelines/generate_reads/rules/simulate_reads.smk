@@ -26,21 +26,11 @@ rule simulate_reads:
     params:
         coverage="{coverage}"
     output:
-        "{iteration}/simulated_reads/coverage_{coverage}.simulated.fastq"
+        "test/{iteration}/simulated_reads/coverage_{coverage}.simulated.fastq"
     shell:
         "badread simulate --reference {input} --quantity {params.coverage}X --length 1107,4 --identity 80,95,5 > {output}"
 
-rule create_diversity:
-    input:
-        ref= "references/poliovirus/Sabin_1_amplicon.fasta"
-    params:
-        distance = "{distance}"
-    output:
-        "{iteration}/diverse_refs/distance_{distance}.fasta"
-    shell:
-        "python pipelines/generate_reads/mutate.py --fasta {input.ref} "
-        "--distance {params.distance} --outfile {output}"
- 
+
 # rule make_sample_file:
 #     input:
 #         expand(config["outputDir"]+"/{{reference}}/simulated_amplicons/distance_{{distance}}_{amplicon}.simulated.fastq", amplicon=config["amplicons"])

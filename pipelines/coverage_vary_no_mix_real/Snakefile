@@ -1,0 +1,45 @@
+import os
+import collections
+from Bio import SeqIO
+from mpl_toolkits.mplot3d import Axes3D
+import matplotlib as mpl
+from matplotlib import pyplot as plt
+import pandas as pd
+import random
+##### Target rules #####
+
+rule all:
+    input:
+        expand("test/{iteration}/no_mix/calls_ref/distance_0.01_coverage_{coverage}/round_1_phased.vcf",iteration=config["iterations"],coverage=config["coverages"]),
+        expand("test/{iteration}/no_mix/calls_cns/distance_0.01_coverage_{coverage}/round_1_phased.vcf",iteration=config["iterations"],coverage=config["coverages"]),
+        expand("test/{iteration}/alignments/distance_0.01_coverage_{coverage}X.aln.fasta",iteration=config["iterations"],coverage=config["coverages"]),
+        expand("test/{iteration}/alignments/distance_0.01_coverage_{coverage}_sabin_cns.aln.fasta",iteration=config["iterations"],coverage=config["coverages"]),
+        expand("test/{iteration}/alignments/distance_0.01_coverage_{coverage}_ref_cns.aln.fasta",iteration=config["iterations"],coverage=config["coverages"])
+
+
+rule generate_coverages:
+    input:
+        "real_reads/sabin_1.fastq"
+    params:
+        coverage="{coverage}"
+    output:
+        temp("test/{iteration}/simulated_reads/coverage_{coverage}.simulated.fastq")
+    run:
+        records = []
+        for record in SeqIO.parse(str(input),"fastq"):
+            records.append(record)
+        fw = open(str(output),"w")
+        selection = random.choices(records, k=int(params.coverage))
+        c = 0
+        for record in selection:
+            c +=1
+            record.id = str(record.id) + '-'+ str(c)
+        SeqIO.write(selection,fw,"fastq")
+        fw.close()
+                
+
+##### Modules #####
+include: "rules/polish.smk"
+include: "rules/no_mix_test.smk"
+
+

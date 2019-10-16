@@ -1,0 +1,24 @@
+import os
+import collections
+from Bio import SeqIO
+from mpl_toolkits.mplot3d import Axes3D
+import matplotlib as mpl
+from matplotlib import pyplot as plt
+import pandas as pd
+##### Target rules #####
+
+rule all:
+    input:
+        expand("{iteration}/simulated_reads/coverage_{coverage}.simulated.fastq",iteration=config["iterations"], coverage=config["coverages"]),
+        expand("{iteration}/consensus_medaka_sequences/distance_{distance}_coverage_{coverage}/consensus.fasta",iteration=config["iterations"], distance=config["distances"], coverage=config["coverages"]),
+        expand("coverage_distance_accuracy_both.png")
+
+##### Modules #####
+include: "rules/simulate_reads.smk"
+include: "rules/polish.smk"
+include: "rules/polish_just_medaka.smk"
+include: "rules/results.smk"
+include: "rules/results_medaka.smk"
+
+
+

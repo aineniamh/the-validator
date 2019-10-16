@@ -1,0 +1,25 @@
+import os
+import collections
+from Bio import SeqIO
+from mpl_toolkits.mplot3d import Axes3D
+import matplotlib as mpl
+from matplotlib import pyplot as plt
+import pandas as pd
+##### Target rules #####
+rule all:
+    input:
+        expand("test/{iteration}/no_mix/calls_ref/distance_{distance}_real/round_1_phased.vcf",iteration=config["iterations"],distance=config["distances"]),
+        expand("test/{iteration}/no_mix/calls_cns/distance_{distance}_real/round_1_phased.vcf",iteration=config["iterations"],distance=config["distances"]),
+        expand("test/{iteration}/alignments/distance_{distance}_real.aln.fasta",iteration=config["iterations"],distance=config["distances"]),
+        expand("test/{iteration}/alignments/distance_{distance}_sabin_cns.aln.fasta",iteration=config["iterations"],distance=config["distances"]),
+        expand("test/{iteration}/alignments/distance_{distance}_ref_cns.aln.fasta",iteration=config["iterations"],distance=config["distances"]),
+        expand("test/{iteration}/polishing/distance_{distance}_real/mapped.racon4.paf",iteration=config["iterations"],distance=config["distances"]),
+        expand("test/{iteration}/polishing/distance_{distance}_real/mapped.medaka.paf",iteration=config["iterations"],distance=config["distances"]),
+        expand("test/{iteration}/polishing/distance_{distance}_real_scratch/mapped.medaka.paf",iteration=config["iterations"],distance=config["distances"])
+#, coverage=config["coverages"]
+
+##### Modules #####
+include: "rules/polish.smk"
+include: "rules/no_mix_test.smk"
+
+

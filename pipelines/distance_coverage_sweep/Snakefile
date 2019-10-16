@@ -9,17 +9,16 @@ import pandas as pd
 
 rule all:
     input:
-        expand("{iteration}/simulated_mixture/distance_{distance}_coverage_{coverage}.simulated.fastq",iteration=config["iterations"], coverage=config["coverages"],distance=config["distances"])
-        # expand("{iteration}/simulated_reads/coverage_{coverage}.simulated.fastq",iteration=config["iterations"], coverage=config["coverages"]),
-        # expand("{iteration}/consensus_medaka_sequences/distance_{distance}_coverage_{coverage}/consensus.fasta",iteration=config["iterations"], distance=config["distances"], coverage=config["coverages"]),
-        # expand("coverage_distance_accuracy_both.png")
+        expand("{iteration}/simulated_reads/coverage_{coverage}.simulated.fastq",iteration=config["iterations"], coverage=config["coverages"]),
+        expand("{iteration}/consensus_medaka_sequences/distance_{distance}_coverage_{coverage}/consensus.fasta",iteration=config["iterations"], distance=config["distances"], coverage=config["coverages"]),
+        expand("coverage_distance_accuracy_both.png")
 
 ##### Modules #####
 include: "rules/simulate_reads.smk"
 include: "rules/polish.smk"
-# include: "rules/polish_just_medaka.smk"
+include: "rules/polish_just_medaka.smk"
 include: "rules/results.smk"
-# include: "rules/results_medaka.smk"
-include: "rules/simulate_diverse_reads.smk"
+include: "rules/results_medaka.smk"
+
 
 
